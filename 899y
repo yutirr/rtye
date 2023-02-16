@@ -1,0 +1,85 @@
+import random
+
+class Room:
+    def __init__(self, name, description, items, enemies):
+        self.name = name
+        self.description = description
+        self.items = items
+        self.enemies = enemies
+        self.exits = {}
+
+    def add_exit(self, direction, room):
+        self.exits[direction] = room
+
+    def remove_item(self, item):
+        self.items.remove(item)
+
+    def describe(self):
+        print(f"You're in the {self.name}.")
+        print(self.description)
+        if self.enemies:
+            print("You see the following enemies:")
+            for enemy in self.enemies:
+                print(f"- {enemy}")
+        else:
+            print("You see the following items:")
+            for item in self.items:
+                print(f"- {item}")
+        print("You can go:")
+        for direction, room in self.exits.items():
+            print(f"- {direction} to the {room.name}")
+
+class Player:
+    def __init__(self, name, current_room):
+        self.name = name
+        self.current_room = current_room
+        self.inventory = []
+        self.health = 100
+        self.score = 0
+
+    def check_inventory(self):
+        if not self.inventory:
+            print("Your inventory is empty.")
+        else:
+            print("Your inventory contains:")
+            for item in self.inventory:
+                print(f"- {item}")
+
+    def check_health(self):
+        print(f"Your health is {self.health}.")
+
+    def check_score(self):
+        print(f"Your score is {self.score}.")
+
+    def move(self, direction):
+        if direction in self.current_room.exits:
+            self.current_room = self.current_room.exits[direction]
+            print(f"You move {direction} to the {self.current_room.name}.")
+        else:
+            print("You can't go that way.")
+
+    def pick_up(self, item):
+        if item in self.current_room.items:
+            self.inventory.append(item)
+            self.current_room.remove_item(item)
+            print(f"You pick up the {item}.")
+        else:
+            print(f"There's no {item} here.")
+
+    def use(self, item):
+        if item in self.inventory:
+            if item == "healing potion":
+                self.health = min(100, self.health + 50)
+                self.inventory.remove(item)
+                print("You use the healing potion and feel better.")
+            elif item == "sword":
+                if self.current_room.enemies:
+                    enemy = self.current_room.enemies.pop()
+                    print(f"You use the sword and defeat the {enemy}.")
+                    self.score += 10
+                else:
+                    print("There are no enemies here to fight.")
+            else:
+                print(f"You can't use the {item}.")
+        else:
+            print(f"You don
